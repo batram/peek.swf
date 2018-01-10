@@ -2,16 +2,55 @@
   <head>
     <title>peek.swf cross file access</title>
     <script>
-      function load_flash_file(){
-        peek = document.getElementById('peek');
-        url = document.getElementById('flash_file_url').value;
-        peek.load_file(url);
-      }
+      var peekAS;
+      var url;
+      var classes;
+
+      PeekJS = {
+        
+        load_flash_file: function(){
+          peekAS = document.getElementById('peek');
+          url = document.getElementById('flash_file_url').value;
+          peekAS.load_file(url);
+        },
+        
+        set_entry: function(name){
+          var en = document.getElementById("entry");
+          en.innerHTML = '<ul><li>' + name + '</li></ul>';
+        },
+        
+        add_classes: function(cls){
+          console.log('received classes', cls);
+          var ul = document.getElementById("cls_list");
+          ul.innerHTML = "";
+          for(i = 0; i < cls.length; i++){
+            var li = document.createElement("li");
+            li.classList.add();
+            li.onclick = PeekJS.get_class_info;
+            li.appendChild(document.createTextNode(cls[i]));
+            ul.appendChild(li);
+          }
+        },
+        
+        get_class_info: function(name){
+          console.log(unescape(peekAS.get_class_info(name.target.innerHTML)));
+        }
+      } 
     </script>
   </head>
   <body>
     <embed id="peek" src="peek.swf" type="application/x-shockwave-flash">
     <input type="text" id="flash_file_url" value="http://batr.am/player.swf">
-    <input type="button" value="load flash file" onclick="load_flash_file()">
+    <input type="button" value="load flash file" onclick="PeekJS.load_flash_file()">
+    
+    <div id="as_classes">
+      entry point:
+      <div id="entry"></div>
+      available classes:
+      <ul id="cls_list">
+        <li>none</li>
+        <li>not loaded</li>
+      </ul>
+    </div>
   </body>
 </html>

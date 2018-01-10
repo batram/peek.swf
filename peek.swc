@@ -37,7 +37,7 @@
                 
         function trys(){
           try {
-            console_trace(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());
+            myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames();
           } catch(e){
             ExternalInterface.call("console.log", 'err', e);
             console_trace(e);
@@ -45,10 +45,9 @@
           }
         }
         
-        function onLoadComplete(event:Event):void 
-        { 
+        function onLoadComplete(event:Event){ 
           try{
-            dump(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());
+            add_classes(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());
             if(loaderInfo.parameters.c){
               ExternalInterface.call("console.log", 'getting', loaderInfo.parameters.c);
               llo(getClass(loaderInfo.parameters.c));
@@ -67,7 +66,7 @@
         }
         
         
-        function llo(o:*){
+        function llo(o:*){/*
           var description:XML = describeType(o);
           console_trace(describeType(o));
           ExternalInterface.call("function(x){console.log(unescape(x))}", escape(describeType(o)));
@@ -85,12 +84,18 @@
                 console_trace("               - "+p.@type);
               }
             }
-          }
+          }*/
         }
         
-        private function dump(param1:Object) : void
-        {
-          ExternalInterface.call("console.log", param1);
+        private function add_classes(param1:Object){
+          ExternalInterface.addCallback('get_class_info', get_class_info);
+          var description:XML = describeType(myLoader.content);
+          ExternalInterface.call("PeekJS.set_entry", description.attributes()[0].toString());
+          ExternalInterface.call("PeekJS.add_classes", param1);
+        }
+        
+        function get_class_info(name:String){
+          return escape(describeType(myLoader.contentLoaderInfo.applicationDomain.getDefinition(name)));
         }
         
         function getClass(cl:String){
