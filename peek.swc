@@ -89,6 +89,8 @@
         
         private function add_classes(param1:Object){
           ExternalInterface.addCallback('get_class_info', get_class_info);
+          ExternalInterface.addCallback('call_function', call_function);
+          
           var description:XML = describeType(myLoader.content);
           ExternalInterface.call("PeekJS.set_entry", description.attributes()[0].toString());
           ExternalInterface.call("PeekJS.add_classes", param1);
@@ -96,6 +98,38 @@
         
         function get_class_info(name:String){
           return escape(describeType(myLoader.contentLoaderInfo.applicationDomain.getDefinition(name)));
+        }
+        
+        function call_function(cmd:String){
+          try{
+            var params = [];
+            
+            if(cmd.indexOf('::') == -1){
+              return myLoader.content[(cmd.split('(')[0])]();
+            }
+            
+            var space = cmd.split('::')[0];
+            var stub = cmd.split('::')[1];
+            var clf = stub.split('(')[0];
+            var class_name = space + "::" + clf.split('.')[0];
+            var function_name = clf.split('.')[1]
+            console_trace("class_name: "+ class_name + ", function_name: " + function_name);
+            var cls = myLoader.contentLoaderInfo.applicationDomain.getDefinition(class_name);
+            if(cls){
+              var fun = cls[function_name];
+              if(fun){
+                var res = fun.call(cls, params);
+                return [escape(describeType(res)), res];
+              } else {
+                return ['nope', 'no function'];
+              }
+            } else {
+              return ['nope', 'no class'];
+            }
+          } catch(e:*){
+            ExternalInterface.call("console.log", 'err', e);
+            console_trace(e);
+          }
         }
         
         function getClass(cl:String){

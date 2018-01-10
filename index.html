@@ -1,6 +1,33 @@
 <html>
   <head>
     <title>peek.swf cross file access</title>
+    <style>
+      #cls_info {
+        float: left;
+        margin-left: 30px;
+        width: 800px;
+      }
+      
+      #cls_info textarea{
+        width: 800px;
+        height: 500px;
+      }
+      
+      #funcs {
+        width: 500px;
+      }
+      
+      #con {
+        width: 100%;
+        float: none;
+      }
+      
+      #as_classes {
+        width: 700px;
+        overflow: hidden;
+        float: left;
+      }
+    </style>
     <script>
       var peekAS;
       var url;
@@ -33,7 +60,14 @@
         },
         
         get_class_info: function(name){
-          console.log(unescape(peekAS.get_class_info(name.target.innerHTML)));
+          document.getElementById('cls_xml').value=  (unescape(peekAS.get_class_info(name.target.innerHTML)));
+        },
+        
+        call_func: function(e){
+          func = document.getElementById('funcs').value;
+          res = peekAS.call_function(func);
+          res[0] = unescape(res[0]);
+          console.log(res)
         }
       } 
     </script>
@@ -42,7 +76,7 @@
     <embed id="peek" src="peek.swf" type="application/x-shockwave-flash">
     <input type="text" id="flash_file_url" value="http://batr.am/player.swf">
     <input type="button" value="load flash file" onclick="PeekJS.load_flash_file()">
-    
+    <div id="con">    
     <div id="as_classes">
       entry point:
       <div id="entry"></div>
@@ -52,5 +86,16 @@
         <li>not loaded</li>
       </ul>
     </div>
+    
+    <div id="cls_info">
+      <div></div>
+      <textarea id="cls_xml"></textarea>
+      <div>
+        <input type="text" id="funcs" value="com.longtailvideo.jwplayer.player::PlayerLicensed.toString()">
+        <input value="func off" type="button" onclick="PeekJS.call_func()">
+      </div>
+    </div>
+    </div>
+
   </body>
 </html>
