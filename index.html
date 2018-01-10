@@ -1,8 +1,17 @@
 <html>
   <head>
     <title>peek.swf cross file access</title>
+    <script>
+      function load_flash_file(){
+        peek = document.getElementById('peek');
+        url = document.getElementById('flash_file_url').value;
+        peek.load_file(url);
+      }
+    </script>
   </head>
   <body>
-    <embed src="peek.swf">
+    <embed id="peek" src="peek.swf" type="application/x-shockwave-flash">
+    <input type="text" id="flash_file_url" value="http://batr.am/player.swf">
+    <input type="button" value="load flash file" onclick="load_flash_file()">
   </body>
 </html>

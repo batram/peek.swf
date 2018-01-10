@@ -1,1 +1,108 @@
-.flash bbox=400x400 background=#000044 fps=10 version=14  .action:    package {      import flash.display.*;      import flash.events.*;      import flash.external.ExternalInterface;      import flash.net.*;      import flash.system.*;      import flash.utils.*;          public class loader extends MovieClip {               var mcExt:*;        var myLoader:Loader = new Loader();             var ar_asf:Array = new Array();                function loader() : * {          var l:String = loaderInfo.parameters.f;                  Security.allowDomain("*");          Security.allowInsecureDomain("*");          myLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);          var context:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);          context.parameters = loaderInfo.parameters;          console_trace(loaderInfo.parameters.f);          myLoader.load(new URLRequest(loaderInfo.parameters.f), context);          addChild(myLoader);          setTimeout(trys, 1000);        }                        function trys(){          try {            console_trace(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());          } catch(e){            ExternalInterface.call("console.log", 'err', e);            console_trace(e);            setTimeout(trys, 1000);          }        }                function onLoadComplete(event:Event):void         {           try{            dump(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());            if(loaderInfo.parameters.c){              ExternalInterface.call("console.log", 'getting', loaderInfo.parameters.c);              llo(getClass(loaderInfo.parameters.c));              getClass(loaderInfo.parameters.c).params.assets = "http://batr.am/asf";              ExternalInterface.call("console.log", 'getting', getClass(loaderInfo.parameters.c).params);            } else {              llo(myLoader.content);              //llo(myLoader.content.root);            }            console_trace(myLoader.content.name);          } catch(e:*){            ExternalInterface.call("console.log", 'err', e);            console_trace(e);            setTimeout(function(){onLoadComplete(null)}, 1000);          }        }                        function llo(o:*){          var description:XML = describeType(o);          console_trace(describeType(o));          ExternalInterface.call("function(x){console.log(unescape(x))}", escape(describeType(o)));          console_trace("Properties:\n------------------");          for each (var a:XML in description.accessor){            console_trace(a.@name+" : "+a.@type);          }                     console_trace("\n\nMethods:\n------------------");          for each (var m:XML in description.method) {            trace(m.@name+" : "+m.@returnType);            if (m.parameter != undefined) {              console_trace("     arguments");              for each (var p:XML in m.parameter){                console_trace("               - "+p.@type);              }            }          }        }                private function dump(param1:Object) : void        {          ExternalInterface.call("console.log", param1);        }                function getClass(cl:String){          return (myLoader.contentLoaderInfo.applicationDomain.getDefinition(cl) as Class);        }                function console_trace(st){          trace(st);          ExternalInterface.call("console.log", 'trace', st);        }      }    }  .end.end  
+.flash bbox=400x400 background=#000044 fps=10 version=14
+  .action:
+    package {
+      import flash.display.*;
+      import flash.events.*;
+      import flash.external.ExternalInterface;
+      import flash.net.*;
+      import flash.system.*;
+      import flash.utils.*;
+    
+      public class loader extends MovieClip {
+        var mcExt:*;
+        var myLoader:Loader = new Loader();     
+        var ar_asf:Array = new Array();
+        
+        function loader() : * {
+          var l:String = loaderInfo.parameters.f;        
+          Security.allowDomain("*");
+          Security.allowInsecureDomain("*");
+          
+          ExternalInterface.addCallback('load_file', load_file);
+          
+          if(loaderInfo.parameters.f != null){
+            load_file(loaderInfo.parameters.f);
+          }
+        }  
+          
+        function load_file(url:String){
+          myLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);
+          var context:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
+          context.parameters = loaderInfo.parameters;
+          console_trace("Loading: " + url);
+          myLoader.load(new URLRequest(url), context);
+          addChild(myLoader);
+          setTimeout(trys, 1000);
+        }
+                
+        function trys(){
+          try {
+            console_trace(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());
+          } catch(e){
+            ExternalInterface.call("console.log", 'err', e);
+            console_trace(e);
+            setTimeout(trys, 1000);
+          }
+        }
+        
+        function onLoadComplete(event:Event):void 
+        { 
+          try{
+            dump(myLoader.contentLoaderInfo.applicationDomain.getQualifiedDefinitionNames());
+            if(loaderInfo.parameters.c){
+              ExternalInterface.call("console.log", 'getting', loaderInfo.parameters.c);
+              llo(getClass(loaderInfo.parameters.c));
+              getClass(loaderInfo.parameters.c).params.assets = "http://batr.am/asf";
+              ExternalInterface.call("console.log", 'getting', getClass(loaderInfo.parameters.c).params);
+            } else {
+              llo(myLoader.content);
+            }
+            console_trace(myLoader.content.name);
+          } catch(e:*){
+            ExternalInterface.call("console.log", 'err', e);
+
+            console_trace(e);
+            setTimeout(function(){onLoadComplete(null)}, 1000);
+          }
+        }
+        
+        
+        function llo(o:*){
+          var description:XML = describeType(o);
+          console_trace(describeType(o));
+          ExternalInterface.call("function(x){console.log(unescape(x))}", escape(describeType(o)));
+          console_trace("Properties:\n------------------");
+          for each (var a:XML in description.accessor){
+            console_trace(a.@name+" : "+a.@type);
+          } 
+          
+          console_trace("\n\nMethods:\n------------------");
+          for each (var m:XML in description.method) {
+            trace(m.@name+" : "+m.@returnType);
+            if (m.parameter != undefined) {
+              console_trace("     arguments");
+              for each (var p:XML in m.parameter){
+                console_trace("               - "+p.@type);
+              }
+            }
+          }
+        }
+        
+        private function dump(param1:Object) : void
+        {
+          ExternalInterface.call("console.log", param1);
+        }
+        
+        function getClass(cl:String){
+          return (myLoader.contentLoaderInfo.applicationDomain.getDefinition(cl) as Class);
+        }
+        
+        function console_trace(st){
+          trace(st);
+          ExternalInterface.call("console.log", 'trace', st);
+        }
+      }
+    }
+  .end
+.end
+  
